@@ -12,7 +12,15 @@ class Auth extends CI_Controller
     public function index()
     {
         if ($this->session->userdata('email')) {
-            redirect('user');
+            $email = $this->session->userdata('email');
+            $user = $this->db->get_where('user', ['email' => $email])->row_array();
+            if ($user['level_user'] == 1) {
+                redirect('admin/index');
+            } else if ($user['level_user'] == 2) {
+                redirect('validator/index');
+            } else {
+                redirect('data_entry/index');
+            }
         }
         $this->form_validation->set_rules('email', 'Email', 'required|trim|valid_email', ['required' => 'Email Tidak Boleh Kosong', 'valid_email', 'Masukan Email dengan Benar']);
         $this->form_validation->set_rules('password', 'Password', 'required|trim', [
@@ -47,8 +55,7 @@ class Auth extends CI_Controller
                         redirect('admin/index');
                     } else if ($user['level_user'] == 2) {
                         redirect('validator/index');
-                    }
-                    else {
+                    } else {
                         redirect('data_entry/index');
                     }
                 } else {
@@ -222,4 +229,3 @@ class Auth extends CI_Controller
         }
     }
 }
-
